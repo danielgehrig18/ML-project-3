@@ -2,7 +2,8 @@ function [ testvals ] = crossvalidation(CMP,Xtrain,ytrain,Wtrain,Xtest,ytest,Wte
 %CROSSVALIDATION Summary of this function goes here
 %   Detailed explanation goes here
 
-load('model_final.mat');
+global model;
+
 % template tree parameters
 tree = model.ModelParameters.LearnerTemplates{1};
 
