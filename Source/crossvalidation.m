@@ -10,17 +10,15 @@ tree = model.ModelParameters.LearnerTemplates{1};
 % get parameters 
 n_learn = model.ModelParameters.NLearn;
 method = model.ModelParameters.Method;
-model = fitcensemble(Xtrain, ytrain, 'Method', method, 'NumLearningCycles', n_learn, 'LearnRate', learning_rate, 'Learners', tree); 
+learning_rate = model.LearnRate;
 
-[~,scores] = predict(m, Xtest);
-
-yfit = scores(:,2);
-
-if ~isempty(find(yfit < 0 | yfit > 1))
-    i = load('i.mat');
-    i.i
-    yfit = 1 ./ (1 + exp(-i.i*yfit));
+if ~strcmp('Bag', method)
+    train_model = fitcensemble(Xtrain, ytrain, 'Method', method, 'NumLearningCycles', n_learn, 'Learners', tree); 
+else
+    train_model = fitcensemble(Xtrain, ytrain, 'Method', method, 'NumLearningCycles', n_learn, 'LearnRate', learning_rate, 'Learners', tree);
 end
+    
+yfit = predict(train_model, Xtest);
 
-testvals = -mean(ytest .* log(yfit) + (1 - ytest) .* log(1 - yfit));
+testvals = 1/3 * trace(pdist2(yfit, ytest, 'hamming'));
 end
