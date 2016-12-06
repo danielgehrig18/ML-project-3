@@ -1,25 +1,36 @@
+clear all;
+clc;
+
 global model;
 
 %% get features
 % choose function and its parameters
 fun = 'MLP2_feature_extract3'; % TODO: modify function
-parameters = struct('x_segments', s, ... % TODO: optimize parameters through CV
-                    'y_segments', s, ...
-                    'z_segments', s, ...
-                    'bins',b);
+parameters = struct('x_segments', 3, ... % TODO: optimize parameters through CV
+                    'y_segments', 3, ...
+                    'z_segments', 3, ...
+                    'bins',3);
 
 X = generate_X('data/set_train', fun, parameters);
 
 y = csvread('targets.csv');
 
 %% train model
-model = fitcensemble(X,y,'OptimizeHyperparameters','auto',...
-    'HyperparameterOptimizationOptions',struct('AcquisitionFunctionName',...
-    'expected-improvement-plus', 'MaxObjectiveEvaluations', 30, 'SaveIntermediateResults', 0, 'Verbose', 1, 'ShowPlots', 1, 'Kfold', 20));
+model1 = fitcsvm(X,y(:,1),'OptimizeHyperparameters','all',...
+    'HyperparameterOptimizationOptions',struct('Optimizer', 'gridsearch', 'AcquisitionFunctionName',...
+    'expected-improvement-plus'));
+model2 = fitcsvm(X,y(:,2),'OptimizeHyperparameters','all',...
+    'HyperparameterOptimizationOptions',struct('Optimizer', 'gridsearch', 'AcquisitionFunctionName',...
+    'expected-improvement-plus'));
+model3 = fitcsvm(X,y(:,3),'OptimizeHyperparameters','all',...
+    'HyperparameterOptimizationOptions',struct('Optimizer', 'gridsearch', 'AcquisitionFunctionName',...
+    'expected-improvement-plus'));
 
 
 %% crossvalidation
-cv_model = crossval(model); % TODO: way to pass model function and parameters
+cv_model1 = crossval(model1); % TODO: way to pass model function and parameters
+cv_model2 = crossval(model2); % TODO: way to pass model function and parameters
+cv_model3 = crossval(model3); % TODO: way to pass model function and parameters
 
 CV = kfoldfun(cv_model, @crossvalidation);
 m = mean(CV);
