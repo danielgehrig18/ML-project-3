@@ -1,6 +1,8 @@
 # These folders are ignored by git
 data/
 
+figures/
+
 *~
 
 # Windows default autosave extension
