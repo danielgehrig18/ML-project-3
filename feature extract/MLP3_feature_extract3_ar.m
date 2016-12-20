@@ -4,12 +4,9 @@ function [ x ] = MLP3_feature_extract3_ar( path_name, parameters )
 
 % for optimizing reasons (optimize brain after brain, not step after step -
 % no need of loading another brain image each for-loop-iteration
-if parameters.filterOn
-    load(path_name);
-    imo = im;
-else
-    imo = nii_read_volume(path_name);
-end
+load(path_name);
+imo = im;
+
 
 % Reduce image size
 im = redImSize(imo,parameters.redIm);
@@ -54,7 +51,6 @@ for x_i = 1:x_segments
                        y_regions(y_i):y_regions(y_i + 1),...
                        z_regions(z_i):z_regions(z_i + 1));
             % Adjust image intensity
-            if parameters.imAdjustOn
                 [cx,cy,cz] = size(chunk);
                 chunkAdj = reshape(chunk,[cx,cy*cz]);
                 mask = chunkAdj == 0;
@@ -63,12 +59,6 @@ for x_i = 1:x_segments
                     chunkAdj = imadjust(chunkAdj);
                     chunk1d = chunkAdj(:);
                 end
-%                 minVal = min(chunk1d);
-            else
-                chunk1d = chunk(:);
-                mask = chunk1d == 0;
-            	chunk1d(mask) = [];
-            end
             h = histcounts(squeeze(chunk1d),bins);
             
             x(count, :) = h;
