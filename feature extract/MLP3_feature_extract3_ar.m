@@ -57,11 +57,13 @@ for x_i = 1:x_segments
             if parameters.imAdjustOn
                 [cx,cy,cz] = size(chunk);
                 chunkAdj = reshape(chunk,[cx,cy*cz]);
-                chunkAdj = imadjust(chunkAdj);
-                chunk1d = chunkAdj(:);
-                minVal = min(chunk1d);
-                mask = chunk1d == minVal;
-            	chunk1d(mask) = [];
+                mask = chunkAdj == 0;
+            	chunkAdj(mask) = [];
+                if ~isempty(chunkAdj)
+                    chunkAdj = imadjust(chunkAdj);
+                    chunk1d = chunkAdj(:);
+                end
+%                 minVal = min(chunk1d);
             else
                 chunk1d = chunk(:);
                 mask = chunk1d == 0;

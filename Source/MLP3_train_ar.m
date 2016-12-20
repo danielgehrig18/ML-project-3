@@ -19,8 +19,8 @@ X = generate_X(x_folder, fun, parameters);
 % train bagging model. Trained through optimization
 kernel = 'rbf';
 model = cell(3,1);
-b = [80 80 80];
-C = [20 200 8000];
+b = [80 50 50];
+C = [800 400 6000];
 for k = 1:3
     model{k} = fitcsvm(X,y(:,k),'Standardize',true,'KernelFunction',kernel,...
                 'BoxConstraint',C(k),'KernelScale',b(k));
